@@ -60,6 +60,10 @@ func (b *Board) Update(input *Input) {
 	// get surrounding tiles
 	surrounding := surroundingTiles(match.row, match.col, b.tiles)
 	match.Update(input.mouseButton, surrounding)
+
+	if match.state == explode {
+		explodeAll(b.tiles)
+	}
 }
 
 func maybeMatchTile(inputX, inputY int, tiles [][]*Tile) *Tile {

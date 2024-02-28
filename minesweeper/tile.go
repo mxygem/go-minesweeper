@@ -190,3 +190,15 @@ func placeBombs(difficulty Difficulty, tiles [][]*Tile, r *rand.Rand) {
 
 	// tiles[0][0].bomb = true
 }
+
+func explodeAll(tiles [][]*Tile) {
+	for _, row := range tiles {
+		for _, t := range row {
+			if !t.bomb {
+				continue
+			}
+
+			t.state = explode
+		}
+	}
+}
