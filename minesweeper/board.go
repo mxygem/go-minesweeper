@@ -14,12 +14,12 @@ const (
 type Board struct {
 	width, height int
 	tiles         [][]*Tile
-	difficulty    int
+	difficulty    Difficulty
 }
 
 // NewBoard returns a new Board with tiles populated base on the provided height, width, and
 // difficulty.
-func NewBoard(width, height, diff int) *Board {
+func NewBoard(width, height int, diff Difficulty) *Board {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 
 	b := &Board{width: width, height: height}

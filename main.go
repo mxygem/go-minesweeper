@@ -7,17 +7,11 @@ import (
 	"github.com/mxygem/go-minesweeper/minesweeper"
 )
 
-const (
-	diffEasy = iota
-	diffMedium
-	diffHard
-)
-
 func main() {
-	ebiten.SetWindowSize(minesweeper.ScreenWidth, minesweeper.ScreenHeight)
+	ebiten.SetWindowSize(minesweeper.ScreenWidth, minesweeper.ScreenHeight+100)
 	ebiten.SetWindowTitle("Minesweeper")
 
-	if err := ebiten.RunGame(minesweeper.NewGame(diffEasy)); err != nil {
+	if err := ebiten.RunGame(minesweeper.NewGame(minesweeper.Easy)); err != nil {
 		log.Fatal(err)
 	}
 }

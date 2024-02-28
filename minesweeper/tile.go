@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"image"
-	"image/color"
 	"log"
 	"math"
 	"math/rand"
@@ -109,11 +108,7 @@ func (t *Tile) Draw(boardImage *ebiten.Image) {
 	case base:
 		op.ColorScale.ScaleWithColor(cGrey80)
 	case cleared:
-		if t.surrounding == 0 {
-			op.ColorScale.ScaleWithColor(cWhite)
-		} else {
-			op.ColorScale.ScaleWithColor(cGreen)
-		}
+		op.ColorScale.ScaleWithColor(cWhite)
 	case explode:
 		op.ColorScale.ScaleWithColor(cRed)
 	}
@@ -136,7 +131,7 @@ func (t *Tile) Draw(boardImage *ebiten.Image) {
 		msg = "X"
 	}
 	if t.surrounding > 0 {
-		top.ColorScale.ScaleWithColor(color.White)
+		top.ColorScale.ScaleWithColor(numColor(t.surrounding))
 		msg = strconv.Itoa(t.surrounding)
 	}
 
@@ -172,7 +167,7 @@ func tiles(width, height, tileSize int) [][]*Tile {
 	return tiles
 }
 
-func placeBombs(difficulty int, tiles [][]*Tile, r *rand.Rand) {
+func placeBombs(difficulty Difficulty, tiles [][]*Tile, r *rand.Rand) {
 	if len(tiles) == 0 {
 		return
 	}
@@ -180,7 +175,7 @@ func placeBombs(difficulty int, tiles [][]*Tile, r *rand.Rand) {
 	rowCount := len(tiles)
 	colCount := len(tiles[0])
 	tileCount := rowCount * colCount
-	bombCount := int(math.Floor(float64(tileCount) * diffFill[difficulty]))
+	bombCount := int(math.Floor(float64(tileCount) * diffFill[int(difficulty)]))
 
 	for i := 0; i < bombCount; i++ {
 		row := r.Intn(rowCount)
