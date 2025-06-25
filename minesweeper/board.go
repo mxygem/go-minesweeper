@@ -7,10 +7,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const (
-	borderWidth = 5
-)
-
 type Board struct {
 	width, height int
 	tiles         [][]*Tile
@@ -24,6 +20,7 @@ func NewBoard(width, height int, diff Difficulty) *Board {
 
 	b := &Board{width: width, height: height}
 	b.tiles = tiles(width, height, tileSize)
+
 	placeBombs(diff, b.tiles, r)
 
 	return b
@@ -61,8 +58,15 @@ func (b *Board) Update(input *Input) {
 	surrounding := surroundingTiles(match.row, match.col, b.tiles)
 	match.Update(input.mouseButton, surrounding)
 
+	// if a bomb was clicked, explode all of them
 	if match.state == explode {
 		explodeAll(b.tiles)
+	}
+
+	// if a tile with no surrounding bombs is clicked, attempt to clear any other adjacent tiles
+	// with no surrounding bombs and clear the border tiles round them.
+	if match.surrounding == 0 && !match.bomb {
+		clearZeroSurrounds(surrounding, b.tiles)
 	}
 }
 
@@ -113,5 +117,33 @@ func surroundingTiles(row, col int, tiles [][]*Tile) []*Tile {
 		}
 	}
 
+	// fmt.Printf("tile row: %d col: %d\n", row, col)
+	// fmt.Printf("returning %d surrounding tiles\n", len(tilesOut))
+	// for i, t := range tilesOut {
+	// 	fmt.Printf("%d: row: %d col: %d bomb: %v, state: %d, surrounding: %d\n", i, t.row, t.col, t.bomb, t.state, t.surrounding)
+	// }
+
 	return tilesOut
+}
+
+func clearZeroSurrounds(surrounding []*Tile, tiles [][]*Tile) {
+	zeros := make([]*Tile, 0, len(surrounding))
+
+	for _, st := range surrounding {
+		tile := tiles[st.row][st.col]
+		subSurround := surroundingTiles(tile.row, tile.col, tiles)
+		tile.Update(mouseButtonLeft, subSurround)
+
+		if tile.surrounding == 0 && tile.state != cleared && !tile.bomb {
+			zeros = append(zeros, tile)
+		}
+		tile.state = cleared
+	}
+
+	if len(zeros) > 0 {
+		for _, z := range zeros {
+			zSurrounding := surroundingTiles(z.row, z.col, tiles)
+			clearZeroSurrounds(zSurrounding, tiles)
+		}
+	}
 }

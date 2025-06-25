@@ -11,7 +11,7 @@ func main() {
 	ebiten.SetWindowSize(minesweeper.ScreenWidth, minesweeper.ScreenHeight+100)
 	ebiten.SetWindowTitle("Minesweeper")
 
-	if err := ebiten.RunGame(minesweeper.NewGame(minesweeper.Easy)); err != nil {
+	if err := ebiten.RunGame(minesweeper.NewGame(minesweeper.Medium)); err != nil {
 		log.Fatal(err)
 	}
 }

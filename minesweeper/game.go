@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	ScreenWidth  = 400.0
-	ScreenHeight = 400.0
+	ScreenWidth  = 500.0
+	ScreenHeight = 500.0
 )
 
 type Difficulty int
@@ -26,7 +26,7 @@ type Game struct {
 
 func NewGame(diff Difficulty) *Game {
 	g := &Game{
-		board: NewBoard(ScreenWidth, ScreenHeight+50, diff),
+		board: NewBoard(ScreenWidth, ScreenHeight, diff),
 		input: NewInput(),
 	}
 
@@ -40,6 +40,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func (g *Game) Update() error {
 	// restart game when R is pressed
 	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+		g.board = NewBoard(g.board.width, g.board.height, g.board.difficulty)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		ebiten.SetWindowSize(ScreenWidth*2, ScreenHeight*2)
 		g.board = NewBoard(g.board.width, g.board.height, g.board.difficulty)
 	}
 

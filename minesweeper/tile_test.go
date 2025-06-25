@@ -63,13 +63,13 @@ func TestTiles(t *testing.T) {
 func TestPlaceBombs(t *testing.T) {
 	testCases := []struct {
 		name       string
-		difficulty int
+		difficulty Difficulty
 		tiles      [][]*Tile
 		expected   [][]*Tile
 	}{
 		{
 			name:       "5x5 easy",
-			difficulty: 0,
+			difficulty: Easy,
 			tiles:      tiles(50, 50, 10),
 			expected: [][]*Tile{
 				{&Tile{row: 0, col: 0, bomb: true}, &Tile{row: 0, col: 1, bomb: true}, &Tile{row: 0, col: 2}, &Tile{row: 0, col: 3}, &Tile{row: 0, col: 4, bomb: true}},
@@ -81,7 +81,7 @@ func TestPlaceBombs(t *testing.T) {
 		},
 		{
 			name:       "5x5 medium",
-			difficulty: 1,
+			difficulty: Medium,
 			tiles:      tiles(50, 50, 10),
 			expected: [][]*Tile{
 				{&Tile{row: 0, col: 0, bomb: true}, &Tile{row: 0, col: 1, bomb: true}, &Tile{row: 0, col: 2}, &Tile{row: 0, col: 3}, &Tile{row: 0, col: 4, bomb: true}},
@@ -93,7 +93,7 @@ func TestPlaceBombs(t *testing.T) {
 		},
 		{
 			name:       "10x10 easy",
-			difficulty: 0,
+			difficulty: Easy,
 			tiles:      tiles(100, 100, 10),
 			expected: [][]*Tile{
 				{&Tile{row: 0, col: 0}, &Tile{row: 0, col: 1, bomb: true}, &Tile{row: 0, col: 2}, &Tile{row: 0, col: 3, bomb: true}, &Tile{row: 0, col: 4}, &Tile{row: 0, col: 5, bomb: true}, &Tile{row: 0, col: 6}, &Tile{row: 0, col: 7}, &Tile{row: 0, col: 8, bomb: true}, &Tile{row: 0, col: 9}},

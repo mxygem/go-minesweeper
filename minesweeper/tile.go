@@ -3,6 +3,7 @@ package minesweeper
 import (
 	"bytes"
 	_ "embed"
+	"fmt"
 	"image"
 	"log"
 	"math"
@@ -23,7 +24,7 @@ const (
 )
 
 var (
-	diffFill  = map[int]float64{0: 0.25, 1: 0.45, 2: 0.6}
+	diffFill  = map[int]float64{0: 0.2, 1: 0.45, 2: 0.6}
 	tileImage = ebiten.NewImage(tileSize-2, tileSize-2)
 )
 
@@ -63,6 +64,7 @@ func (t *Tile) Update(btn mouseButton, surrounding []*Tile) {
 		}
 
 		if t.bomb {
+			fmt.Printf("tile r:%d c:%d is a bomb\n", t.row, t.col)
 			t.state = explode
 			return
 		}
@@ -77,7 +79,22 @@ func (t *Tile) Update(btn mouseButton, surrounding []*Tile) {
 		}
 
 		t.surrounding = bombCount
-		t.state = cleared
+		// don't mark 0S as cleared, will be handled by clearZeroSurrounds
+		if t.surrounding > 0 {
+			t.state = cleared
+		}
+	case mouseButtonMiddle:
+		if t.state != cleared || t.bomb {
+			return
+		}
+
+		for _, st := range surrounding {
+			if st.state == marked {
+				continue
+			}
+
+			st.state = cleared
+		}
 	case mouseButtonRight:
 		switch t.state {
 		case base:
@@ -105,13 +122,17 @@ func (t *Tile) Draw(boardImage *ebiten.Image) {
 	op.GeoM.Translate(float64(t.X)+1, float64(t.Y)+1)
 
 	switch t.state {
-	case base:
+	case base, marked:
 		op.ColorScale.ScaleWithColor(cGrey80)
 	case cleared:
 		op.ColorScale.ScaleWithColor(cWhite)
 	case explode:
 		op.ColorScale.ScaleWithColor(cRed)
 	}
+
+	// if t.bomb {
+	// 	op.ColorScale.ScaleWithColor(cGrey50)
+	// }
 
 	boardImage.DrawImage(tileImage, op)
 
@@ -176,6 +197,7 @@ func placeBombs(difficulty Difficulty, tiles [][]*Tile, r *rand.Rand) {
 	colCount := len(tiles[0])
 	tileCount := rowCount * colCount
 	bombCount := int(math.Floor(float64(tileCount) * diffFill[int(difficulty)]))
+	fmt.Printf("placing bombs: diff: %d rows %d cols: %d tile count: %d, bomb count: %d\n", difficulty, rowCount, colCount, tileCount, bombCount)
 
 	for i := 0; i < bombCount; i++ {
 		row := r.Intn(rowCount)
